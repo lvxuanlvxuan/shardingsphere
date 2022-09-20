@@ -7,6 +7,36 @@ spring:
     mode:
       type: Memory
     datasource:
+      druid:
+        #Druid连接通用配置，在DruidDataSourceConfig中手动加载
+        use-global-data-source-stat: true
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        # 打开PSCache，并且指定每个连接上PSCache的大小
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        # 配置监控统计拦截的filter,'wall'用于防火墙,'stat'用于统计,'slf4j'用于日志记录
+        filter:
+          wall:
+            enabled: true
+            config:
+              multi-statement-allow: true
+              none-base-statement-allow: true
+          stat:
+            enabled: true
+            log-slow-sql: true
+            slow-sql-millis: 3000
+            merge-sql: true
+          slf4j:
+            enabled: true
+            statement-log-enabled: true
+            statement-logger-name: BMP
+            statement-sql-pretty-format: true
       names: master,slave
       master:
         type: com.zaxxer.hikari.HikariDataSource
@@ -14,12 +44,22 @@ spring:
         jdbcUrl: jdbc:mysql://139.196.112.185:3307/TEST-01?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&useSSL=false
         username: root
         password: 123456
+        #开发环境各项配置使用默认即可，生产环境需要做相应调整
+        initial-size: 2
+        max-active: 8
+        min-idle: 0
+        max-wait: -1
       slave:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
         jdbcUrl: jdbc:mysql://139.196.112.185:3308/TEST-01?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&useSSL=false
         username: root
         password: 123456
+        #开发环境各项配置使用默认即可，生产环境需要做相应调整
+        initial-size: 2
+        max-active: 8
+        min-idle: 0
+        max-wait: -1
       enabled: true
     rules:
       readwrite-splitting:
